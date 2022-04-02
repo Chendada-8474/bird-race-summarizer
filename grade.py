@@ -5,12 +5,13 @@ from datetime import datetime
 
 
 sp_info = pd.read_csv("./species_information.csv")
+# sp_info = sp_info[sp_info["Category"] != "domestic"]
+
 sp_list = tuple(sp_info[sp_info["Category"] == "species"]["Scientific Name"])
 endm_sp_list = tuple(sp_info[sp_info["Endemic"] == "endemic species"]["Scientific Name"])
 endm_subsp_list = tuple(sp_info[sp_info["Endemic"] == "endemic subspecies"]["Scientific Name"])
 dss_sp_list = tuple(sp_info[sp_info["Da Shue Shan"] == 1]["Scientific Name"])
 race_sp_list = tuple(sp_info[sp_info["Race"] == 1]["Scientific Name"])
-
 
 
 def concat_csv_in_unzip(path):
@@ -68,10 +69,11 @@ def data_summary(dt, dt_type = "global"):
 
     dt_sum = {}
 
-    sp_dt = dt[dt["Category"].isin(["issf", "species", "intergrade", "form"])]
+    sp_dt = dt[dt["Category"].isin(["issf", "species", "intergrade", "form", "domestic"])]
 
     # global total number species, endemic subspecies, endemic species, number of individual
     all_sp_list = set([i.split(" ")[0] + " " + i.split(" ")[1] for i in sp_dt["Scientific Name"]])
+    # all_sp_list = set(sp_dt["Scientific Name"])
     dt_sum["n_sp"] = len(all_sp_list)
     dt_sum["n_endm_sp"] = len(all_sp_list & set(endm_sp_list))
     dt_sum["n_endm_subsp"] = len(all_sp_list & set(endm_subsp_list))
@@ -88,7 +90,7 @@ def data_summary(dt, dt_type = "global"):
 
         w_sp["fir_rec_sp"] = list(all_sp_list - set(dss_sp_list))
 
-        ti_saw = list(all_dt[all_dt["Category"] == "species"][["Scientific Name", "Team Name"]].drop_duplicates()["Scientific Name"])
+        ti_saw = list(all_dt[all_dt["Category"].isin(["domestic", "form", "intergrade", "issf", "species"])][["Scientific Name", "Team Name"]].drop_duplicates()["Scientific Name"])
 
         for sp in all_sp_list:
             if ti_saw.count(sp) == 1:
@@ -148,13 +150,40 @@ def sp_alert_info(sp: str):
 
 if __name__ == "__main__":
 
+
+
     pb_path = "./public-group"
     pc_path = "./parent-child-group"
     pb_dt = concat_csv_in_unzip(pb_path)
     pc_dt = concat_csv_in_unzip(pc_path)
 
+    pb_dt_c_names = []
+    pb_dt_s_names = []
+    pc_dt_c_names = []
+    pc_dt_s_names = []
+
+    for co, s, ca in zip(pb_dt["Common Name"], pb_dt["Scientific Name"], pb_dt["Category"]):
+        if ca in ["domestic", "form", "issf", "intergrade", "issf"]:
+            pb_dt_c_names.append(co.split("(")[0])
+            pb_dt_s_names.append(s.split(" ")[0] + " " + s.split(" ")[1])
+        else:
+            pb_dt_c_names.append(co)
+            pb_dt_s_names.append(s)
+
+    for co, s, ca in zip(pc_dt["Common Name"], pc_dt["Scientific Name"], pc_dt["Category"]):
+        if ca in ["domestic", "form", "issf", "intergrade", "issf"]:
+            pc_dt_c_names.append(co.split("(")[0])
+            pc_dt_s_names.append(s.split(" ")[0] + " " + s.split(" ")[1])
+        else:
+            pc_dt_c_names.append(co)
+            pc_dt_s_names.append(s)
+
+    pb_dt["Common Name"] = pb_dt_c_names
+    pb_dt["Scientific Name"] = pb_dt_s_names
+    pc_dt["Common Name"] = pc_dt_c_names
+    pc_dt["Scientific Name"] = pc_dt_s_names
+
     # global summary
-    year_now = datetime.now().strftime("%Y")
     all_dt = pd.concat([pb_dt, pc_dt])
     glo_sum = data_summary(all_dt, dt_type="global")
 
@@ -170,6 +199,7 @@ if __name__ == "__main__":
     output_path = "./bird_race_result_%s.txt" % time_now
     output_f = open(output_path, "w", encoding='UTF-8')
 
+    year_now = datetime.now().strftime("%Y")
     glo_result = "# %s 大雪山賞鳥大賽比賽結果\n## 大會總紀錄\n- 鳥種數：%s\n- 特有種：%s\n- 特有亞種：%s\n- 鳥隻數：%s" % (year_now, glo_sum["n_sp"], glo_sum["n_endm_sp"], glo_sum["n_endm_subsp"], glo_sum["n_indv"])
 
     output_f.write(glo_result)
@@ -217,13 +247,17 @@ if __name__ == "__main__":
 
     output_f.write("\n### 新紀錄種獎")
 
+    output_f.write("\n| 隊伍 | 新紀錄鳥種 | 英文名 |")
+    output_f.write("\n| --- | --- | --- |")
+
     for sp in glo_sum["w_sp"]["fir_rec_sp"]:
         teams = set(all_dt[all_dt["Scientific Name"] == sp]["Team Name"])
 
         c_name = sp_info.loc[sp_info["Scientific Name"] == sp, "Common Name"].item()
+        e_name = sp_info.loc[sp_info["Scientific Name"] == sp, "English Common Name"].item()
 
         for t in teams:
-            output_f.write("\n- %s %s"% (t, c_name))
+            output_f.write("\n| %s | %s | %s |"% (t, c_name, e_name))
 
 
     output_f.write("\n## 須注意的紀錄")
@@ -231,7 +265,10 @@ if __name__ == "__main__":
 
     for sp in glo_sum["w_sp"]["fir_rec_sp"]:
 
-        output_f.write("\n#### %s" % sp_info.loc[sp_info["Scientific Name"] == sp, "Common Name"].item())
+        c_name = sp_info.loc[sp_info["Scientific Name"] == sp, "Common Name"].item()
+        e_name = sp_info.loc[sp_info["Scientific Name"] == sp, "English Common Name"].item()
+
+        output_f.write("\n#### %s %s" % (c_name, e_name))
         output_f.write(sp_alert_info(sp))
 
 
@@ -239,21 +276,26 @@ if __name__ == "__main__":
 
     for sp in glo_sum["w_sp"]["only1"]:
 
-        output_f.write("\n#### %s" % sp_info.loc[sp_info["Scientific Name"] == sp, "Common Name"].item())
+        c_name = sp_info.loc[sp_info["Scientific Name"] == sp, "Common Name"].item()
+        e_name = sp_info.loc[sp_info["Scientific Name"] == sp, "English Common Name"].item()
+        output_f.write("\n#### %s %s" % (c_name, e_name))
         output_f.write(sp_alert_info(sp))
 
     output_f.write("\n### 只有兩隊看到的物種")
 
     for sp in glo_sum["w_sp"]["only2"]:
-
-        output_f.write("\n#### %s" % sp_info.loc[sp_info["Scientific Name"] == sp, "Common Name"].item())
+        c_name = sp_info.loc[sp_info["Scientific Name"] == sp, "Common Name"].item()
+        e_name = sp_info.loc[sp_info["Scientific Name"] == sp, "English Common Name"].item()
+        output_f.write("\n#### %s %s" % (c_name, e_name))
         output_f.write(sp_alert_info(sp))
 
     output_f.write("\n### 只有三隊看到的物種")
 
     for sp in glo_sum["w_sp"]["only3"]:
 
-        output_f.write("\n#### %s" % sp_info.loc[sp_info["Scientific Name"] == sp, "Common Name"].item())
+        c_name = sp_info.loc[sp_info["Scientific Name"] == sp, "Common Name"].item()
+        e_name = sp_info.loc[sp_info["Scientific Name"] == sp, "English Common Name"].item()
+        output_f.write("\n#### %s %s" % (c_name, e_name))
         output_f.write(sp_alert_info(sp))
 
 
