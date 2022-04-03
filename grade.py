@@ -89,6 +89,7 @@ def data_summary(dt, dt_type = "global"):
         }
 
         w_sp["fir_rec_sp"] = list(all_sp_list - set(dss_sp_list))
+        w_sp["race_fir_rec_sp"] = list(all_sp_list - set(race_sp_list))
 
         ti_saw = list(all_dt[all_dt["Category"].isin(["domestic", "form", "intergrade", "issf", "species"])][["Scientific Name", "Team Name"]].drop_duplicates()["Scientific Name"])
 
@@ -261,9 +262,9 @@ if __name__ == "__main__":
 
 
     output_f.write("\n## 須注意的紀錄")
-    output_f.write("\n### 未曾記錄過的物種")
+    output_f.write("\n### 大賽第一次紀錄的物種")
 
-    for sp in glo_sum["w_sp"]["fir_rec_sp"]:
+    for sp in glo_sum["w_sp"]["race_fir_rec_sp"]:
 
         c_name = sp_info.loc[sp_info["Scientific Name"] == sp, "Common Name"].item()
         e_name = sp_info.loc[sp_info["Scientific Name"] == sp, "English Common Name"].item()

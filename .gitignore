@@ -133,3 +133,5 @@ test.py
 .txt
 公開組成績.csv
 親子組成績.csv
+parent-child-group/.csv
+public-group/.csv
