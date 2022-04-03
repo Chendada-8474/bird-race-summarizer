@@ -482,3 +482,47 @@
    - 地點：Taichung-Dasyueshan 200 Trail-5K~0K
   - 觀察隊伍：老中小蔡鳥隊
   - [清單連結](https://ebird.org/checklist/S95454127)
+
+
+---
+
+# 2022 大雪山賞鳥大賽比賽結果計算程式使用教學
+https://hackmd.io/@chendada/H1-TeTSQ9
+
+## 使用方法
+### 到 Github 下載程式碼
+https://github.com/Chendada-8474/bird-race-summarizer
+
+下載壓縮檔
+![](https://hackmd.io/_uploads/rkvQH6BXq.png)
+
+![](https://hackmd.io/_uploads/SJ4BH6HQ9.png)
+
+解壓縮
+![](https://hackmd.io/_uploads/SkxPBpBm9.png)
+
+裡面會有這些檔案
+![](https://hackmd.io/_uploads/H1HOHpSQq.png)
+
+請把從 eBird 下載下來的 zip 檔，先將 zip 檔案名稱改成該隊伍名稱，依照組別放進資料夾裡，如果是公開組請放在 "public-group"，親子組請放在 "parent-child-group"。不用將 zip 檔解壓縮。
+
+例如這樣：
+![](https://hackmd.io/_uploads/H1RgL6Hmc.png)
+
+兩個組別都放放好之後，直接打開 grade.exe。程式會開始統計成績。
+![](https://hackmd.io/_uploads/SJbNU6rQ9.png)
+
+電腦可能會警告你，按其他資訊，然後按仍要執行。
+![](https://hackmd.io/_uploads/H1_BLarX5.png)
+
+結果就會出現在相同路徑下。
+![](https://hackmd.io/_uploads/ByCFLaHmq.png)
+
+txt 裡面會是 Markdown 語法筆記，可以將裡面的文字貼到 HackMD 裡面，更方便瀏覽。
+![](https://hackmd.io/_uploads/B1goUaSmq.png)
+
+![](https://hackmd.io/_uploads/Bka1PaHm5.png)
+
+![](https://hackmd.io/_uploads/SkKXP6SQ9.png)
+
+![](https://hackmd.io/_uploads/H1PBvaSQ9.png)

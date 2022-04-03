@@ -297,12 +297,3 @@ if __name__ == "__main__":
         e_name = sp_info.loc[sp_info["Scientific Name"] == sp, "English Common Name"].item()
         output_f.write("\n#### %s %s" % (c_name, e_name))
         output_f.write(sp_alert_info(sp))
-
-
-
-
-
-
-
-
-
