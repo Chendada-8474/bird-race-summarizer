@@ -488,7 +488,7 @@
 
 
 # 2022 大雪山賞鳥大賽比賽結果計算程式使用教學
-https://hackmd.io/@chendada/H1-TeTSQ9
+https://hackmd.io
 
 ## 使用方法
 ### 到 Github 下載程式碼
