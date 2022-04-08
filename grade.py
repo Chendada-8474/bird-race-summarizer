@@ -2,6 +2,7 @@ import pandas as pd
 import zipfile
 import os
 from datetime import datetime
+import numpy as np
 
 
 sp_info = pd.read_csv("./species_information.csv")
